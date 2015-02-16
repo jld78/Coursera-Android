@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="l1startcolor">#7f00ff</color>
+    <color name="l1endcolor">#ffffcc</color>
+    
+    <color name="l2startcolor">#ff33ff</color>
+    <color name="l2endcolor">#ffff99</color>
+    
+    <color name="l3startcolor">#990000</color>
+    <color name="l3endcolor">#ffb266</color>
+    
+    <color name="l5startcolor">#0000ff</color>
+	<color name="l5endcolor">#ccffcc</color>
+    
+</resources>
