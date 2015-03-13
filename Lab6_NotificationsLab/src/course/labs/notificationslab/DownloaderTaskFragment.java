@@ -47,11 +47,12 @@ public class DownloaderTaskFragment extends Fragment {
 		// TODO: Retrieve arguments from DownloaderTaskFragment
 		// Prepare them for use with DownloaderTask.
 		Bundle bundle = getArguments();
-		int[] data = bundle.getIntArray("friends");
+		ArrayList<Integer> data = bundle.getIntegerArrayList("friends");
 		
-		Integer[] newData = new Integer[data.length];
-		for (int i = 0; i < data.length; i++) {
-			newData[i] = (Integer)data[i];
+		Integer[] newData = new Integer[data.size()];
+		int j = 0;
+		for (Integer integer : data) {
+			newData[j++] = integer;
 		}
 		
 		
@@ -101,7 +102,9 @@ public class DownloaderTaskFragment extends Fragment {
 		
 		@Override
 		protected void onPostExecute(String[] result) {
-			mCallback.notifyDataRefreshed(result);
+			if(mCallback != null){
+				mCallback.notifyDataRefreshed(result);
+			}
 		}
 		
 	}
@@ -201,14 +204,14 @@ public class DownloaderTaskFragment extends Fragment {
 							// TODO: Check whether or not the MainActivity
 							// received the broadcast
 
-							if (true || false) {
+							if (getResultCode() != MainActivity.IS_ALIVE) {
 
 								// TODO: If not, create a PendingIntent using
 								// the
 								// restartMainActivityIntent and set its flags
 								// to FLAG_UPDATE_CURRENT
-
-
+								PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, restartMainActivityIntent, 
+										PendingIntent.FLAG_UPDATE_CURRENT);
 
 
 
@@ -226,7 +229,7 @@ public class DownloaderTaskFragment extends Fragment {
 								// TODO: Set the notification View's text to
 								// reflect whether the download completed
 								// successfully
-
+								mContentView.setTextViewText(R.id.text, success ? successMsg : failMsg);
 
 
 
@@ -237,10 +240,18 @@ public class DownloaderTaskFragment extends Fragment {
 								// for the small icon. You should also
 								// setAutoCancel(true).
 
-								Notification.Builder notificationBuilder = null;
+								Notification.Builder notificationBuilder = new Notification.Builder(context)
+									.setTicker("Urgent notification")
+									.setSmallIcon(android.R.drawable.stat_sys_warning)
+									.setAutoCancel(true)
+									.setContentIntent(pendingIntent)
+									.setContent(mContentView);
+								
+								
 
 								// TODO: Send the notification
-
+								NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+								notificationManager.notify(MY_NOTIFICATION_ID, notificationBuilder.build());
 
 
 
