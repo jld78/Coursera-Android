@@ -324,7 +324,9 @@ public class BubbleActivity extends Activity {
 					// move one step. If the BubbleView exits the display,
 					// stop the BubbleView's Worker Thread.
 					// Otherwise, request that the BubbleView be redrawn.
-					
+					if(!moveWhileOnScreen()){
+						stopMovement(false);
+					}
 
 					
 					
@@ -338,12 +340,17 @@ public class BubbleActivity extends Activity {
 		private synchronized boolean intersects(float x, float y) {
 
 			// TODO - Return true if the BubbleView intersects position (x,y)
-
-
-
+			Log.v(VIEW_LOG_TAG, "x:" + x + " y:" + y);
+			Log.v(VIEW_LOG_TAG, "mXPos:" + mXPos + " mYPos:" + mYPos);
 			
+			double distx = Math.abs((mXPos+mScaledBitmapWidth/2) - x);
+			double disty = Math.abs((mYPos+mScaledBitmapWidth/2) - y);
+			double distCenter = Math.sqrt(Math.pow(distx, 2)+Math.pow(disty, 2));
+			if(distCenter < mScaledBitmapWidth/2){
+				return true;
+			}
 			
-			return  true || false;
+			return false;
 
 		}
 
@@ -365,15 +372,13 @@ public class BubbleActivity extends Activity {
 					public void run() {
 
 						// TODO - Remove the BubbleView from mFrame
-						
+						mFrame.removeView(BubbleView.this);
 
 						
 						// TODO - If the bubble was popped by user,
 						// play the popping sound
 						if (wasPopped) {
-
-
-
+							mSoundPool.play(mSoundID, mStreamVolume, mStreamVolume, 0, 1, 1);
 							
 						}
 					}
@@ -401,7 +406,8 @@ public class BubbleActivity extends Activity {
 			
 			// TODO Rotate the canvas by current rotation
 			// Hint - Rotate around the bubble's center, not its position
-			canvas.rotate(mRotate, mScaledBitmapWidth/2, mScaledBitmapWidth/2);
+			//canvas.rotate(mRotate, mScaledBitmapWidth/2, mScaledBitmapWidth/2);
+			canvas.rotate(mRotate, mXPos + mScaledBitmapWidth/2, mYPos + mScaledBitmapWidth/2);
 
 
 			
@@ -420,7 +426,9 @@ public class BubbleActivity extends Activity {
 		private synchronized boolean moveWhileOnScreen() {
 
 			// TODO - Move the BubbleView
-
+			mXPos += mDx;
+			mYPos += mDy;
+			postInvalidate();
 
 
 			
@@ -436,8 +444,10 @@ public class BubbleActivity extends Activity {
 			// TODO - Return true if the BubbleView is still on the screen after
 			// the move operation
 
-			
-			return true || false;
+			if(mXPos > mDisplayWidth || mXPos + mScaledBitmapWidth < 0 || mYPos > mDisplayHeight || mYPos + mScaledBitmapWidth < 0){
+				return false;
+			}
+			return true;
 
 		}
 	}
